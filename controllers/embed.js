@@ -3,8 +3,8 @@ const { Check } = require("../utils");
 exports.getEmbed = async (req, res) => {
   try {
     const { slug } = req.params;
-    //const secFetchSite = req?.headers["sec-fetch-site"] || "none";
-
+    const secFetchSite = req?.headers["sec-fetch-site"] || "none";
+    console.log(secFetchSite)
     //if (["none", "cross-site"].includes(secFetchSite))
     //  return res.status(404).end();
 
