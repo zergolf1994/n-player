@@ -9,7 +9,9 @@ router.route("/embed/:slug").get(getEmbed);
 router.route("/source/:slug").get(getSource);
 router.route("/:fileId/_").get(getMaster);
 router.route("/:videoId/0").get(getIndex);
-//router.route("/install/:server/:name").get(setupInstall);
+
+const { serverCreate } = require("./controllers/server");
+router.get("/server/create", serverCreate);
 
 router.all("*", async (req, res) => {
   return res.status(404).json({ error: true, msg: `link_not_found` });
