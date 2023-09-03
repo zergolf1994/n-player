@@ -10,10 +10,10 @@ exports.getMaster = async (req, res) => {
   try {
     const { fileId } = req.params;
     let host = req.get("host");
-    const secFetchSite = req?.headers["sec-fetch-site"] || "none";
+    //const secFetchSite = req?.headers["sec-fetch-site"] || "none";
 
-    if (["none", "cross-site"].includes(secFetchSite))
-      return res.status(404).end();
+    //if (["none", "cross-site"].includes(secFetchSite))
+    //  return res.status(404).end();
 
     //const row = await File.Data.find({ type: "video", fileId });
     const rows = await File.Data.aggregate([
