@@ -3,12 +3,12 @@ const { Check } = require("../utils");
 exports.getEmbed = async (req, res) => {
   try {
     const { slug } = req.params;
-    const secFetchSite = req?.headers["sec-fetch-site"] || "none";
+    //const secFetchSite = req?.headers["sec-fetch-site"] || "none";
 
-    if (["none", "cross-site"].includes(secFetchSite))
-      return res.status(404).end();
+    //if (["none", "cross-site"].includes(secFetchSite))
+    //  return res.status(404).end();
 
-    const referer = Check.extractDomain(req?.headers?.referer);
+   // const referer = Check.extractDomain(req?.headers?.referer);
 
     let data = {
       title: `Player`,
