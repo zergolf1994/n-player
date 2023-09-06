@@ -1,5 +1,6 @@
 const { File } = require("../models");
 const { Check } = require("../utils");
+
 exports.getEmbed = async (req, res) => {
   try {
     const { slug } = req.params;
@@ -111,6 +112,63 @@ exports.getSource = async (req, res) => {
     }
 
     return res.json(data);
+  } catch (err) {
+    console.log(err);
+    return res.json({ error: true });
+  }
+};
+
+exports.getEmbedV = async (req, res) => {
+  try {
+    const { slug } = req.params;
+    let host = req.get("host");
+    //const secFetchSite = req?.headers["sec-fetch-site"] || "none";
+
+    //if (["none", "cross-site"].includes(secFetchSite))
+    //  return res.status(404).end();
+
+    // const referer = Check.extractDomain(req?.headers?.referer);
+
+    let data = {
+      title: `Player`,
+      base_color: `#ffffff`,
+      slug,
+      host: req.get("host"),
+      lang: "th",
+      jwplayer: {
+        key: "W7zSm81+mmIsg7F+fyHRKhF3ggLkTqtGMhvI92kbqf/ysE99",
+        width: "100%",
+        height: "100%",
+        preload: "metadata",
+        primary: "html5",
+        hlshtml: "true",
+        controls: "true",
+        pipIcon: "true",
+      },
+    };
+    const row = await File.List.findOne({ slug }).select(`_id`);
+    if (!row?._id) return res.json({ error: true, msg: "ไม่พบไฟล์วิดีโอ" });
+    data.jwplayer.sources = [
+      {
+        file: `//${host}/${row?._id}/_`,
+        type: `application/vnd.apple.mpegurl`,
+      },
+    ];
+    const thumbnails = await File.Data.findOne({
+      fileId: row?._id,
+      type: "thumbnails",
+    }).select(`_id`);
+
+    if (thumbnails?._id) {
+      data.jwplayer.tracks = [
+        {
+          file: `//${host}/thumbnails/${thumbnails?._id}.vtt`,
+          kind: "thumbnails",
+        },
+      ];
+    }
+    console.log(data);
+    return res.render("jwplayer", data);
   } catch (err) {
     console.log(err);
     return res.json({ error: true });

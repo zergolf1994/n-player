@@ -2,10 +2,11 @@
 const express = require("express");
 const router = express.Router();
 
-const { getEmbed, getSource } = require("./controllers/embed");
+const { getEmbed, getSource, getEmbedV } = require("./controllers/embed");
 const { getIndex, getMaster } = require("./controllers/m3u8");
 
 router.route("/embed/:slug").get(getEmbed);
+router.route("/v/:slug").get(getEmbedV);
 router.route("/source/:slug").get(getSource);
 router.route("/:fileId/_").get(getMaster);
 router.route("/:videoId/0").get(getIndex);

@@ -93,12 +93,10 @@ exports.getVtt = async (req, res) => {
       if (Object.hasOwnProperty.call(contentVtt, key)) {
         const item = contentVtt[key];
         const match = item.match(regex);
-        if (!isNaN(item)) {
-          array.push("");
-        } else if (match) {
+        if (match) {
           const extension = `.${match[1]}`;
-          const newText = item.replace(extension, `/${row?._id}` + extension);
-          array.push(`//${host}/${newText}`);
+          const newText = item.replace(extension, `/${row?._id}` + extension).replace(/\s+/g, '').replace(/thumbnails\//g, '');
+          array.push(`${newText}`);
         } else {
           array.push(item);
         }
