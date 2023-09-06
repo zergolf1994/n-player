@@ -27,7 +27,7 @@ class RunApp {
     this.player.setup(this.data);
     
     this.player.on("bufferChange", (e) => {
-      console.log(e);
+      //console.log(e);
     });
     this.player.on("play", () => {
       this.status = "play";

@@ -4,11 +4,11 @@ exports.getEmbed = async (req, res) => {
   try {
     const { slug } = req.params;
     //const secFetchSite = req?.headers["sec-fetch-site"] || "none";
-    
+
     //if (["none", "cross-site"].includes(secFetchSite))
     //  return res.status(404).end();
 
-   // const referer = Check.extractDomain(req?.headers?.referer);
+    // const referer = Check.extractDomain(req?.headers?.referer);
 
     let data = {
       title: `Player`,
@@ -95,6 +95,21 @@ exports.getSource = async (req, res) => {
     data.jwplayer.hlshtml = "true";
     data.jwplayer.controls = "true";
     data.jwplayer.pipIcon = "enabled";
+
+    const thumbnails = await File.Data.findOne({
+      fileId: row?._id,
+      type: "thumbnails",
+    }).select(`_id`);
+
+    if (thumbnails?._id) {
+      data.jwplayer.tracks = [
+        {
+          file: `//${host}/thumbnails/${thumbnails?._id}.vtt`,
+          kind: "thumbnails",
+        },
+      ];
+    }
+
     return res.json(data);
   } catch (err) {
     console.log(err);

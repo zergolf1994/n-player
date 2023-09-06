@@ -17,7 +17,7 @@ exports.getMaster = async (req, res) => {
 
     //const row = await File.Data.find({ type: "video", fileId });
     const rows = await File.Data.aggregate([
-      { $match: { fileId, active: true } },
+      { $match: { fileId, active: true, type: "video" } },
       //server
       {
         $lookup: {
@@ -108,10 +108,13 @@ exports.getMaster = async (req, res) => {
       },
     ]);
     if (!rows?.length) return res.status(404).end();
+    let removeDefault = rows?.map((e) => e?.name).includes("360");
     let ArrayMaster = ["#EXTM3U"];
     for (const key in rows) {
       if (Object.hasOwnProperty.call(rows, key)) {
         const row = rows[key];
+        if (removeDefault && row?.name == "default") continue;
+
         let contentMaster = row?.contentMaster || [];
         let m3u8Index = row?.m3u8Index;
         if (!contentMaster?.length) {
@@ -133,7 +136,7 @@ exports.getMaster = async (req, res) => {
       }
     }
 
-    if (ArrayMaster.length < 1) return res.status(404).end();
+    if (ArrayMaster.length < 1) return res.status(404).end("1");
     res.set("content-type", "application/x-mpegURL");
     return res.end(ArrayMaster.join(os.EOL));
   } catch (err) {
