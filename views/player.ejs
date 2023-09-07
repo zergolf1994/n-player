@@ -12,14 +12,30 @@
       as="script"
     />
     <script src="https://ssl.p.jwpcdn.com/player/v/8.18.2/jwplayer.js"></script>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//<%= host %>/assets/style.css"
+    />
     <style>
-      * {
-        margin: 0;
-        padding: 0;
+      .jw-skip {
+        zoom: 1.5;
+        border: 1px solid <%= base_color %> !important;
       }
-      body {
-        height: 100dvh;
-        background-color: #000;
+      .jw-skip .jw-text,
+      .jw-skip .jw-icon {
+        color: <%= base_color %> !important;
+      }
+      .btn-out-ads {
+        position: absolute;
+        bottom: 9em;
+        right: 1em;
+        padding: 0.5em;
+        font-weight: bold;
+        border: 1px solid <%= base_color %> !important;
+      }
+      .jw-rightclick {
+        display: none !important;
       }
     </style>
   </head>

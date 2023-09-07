@@ -13,7 +13,7 @@ exports.getEmbed = async (req, res) => {
 
     let data = {
       title: `Player`,
-      base_color: `#ffffff`,
+      base_color: `#ff0000`,
       slug,
       host: req.get("host"),
       lang: "th",
@@ -88,6 +88,7 @@ exports.getSource = async (req, res) => {
         type: `application/vnd.apple.mpegurl`,
       },
     ];
+
     data.jwplayer.key = "W7zSm81+mmIsg7F+fyHRKhF3ggLkTqtGMhvI92kbqf/ysE99"; //ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=
     data.jwplayer.width = "100%";
     data.jwplayer.height = "100%";
@@ -110,6 +111,29 @@ exports.getSource = async (req, res) => {
         },
       ];
     }
+/*
+    data.jwplayer.advertising = {
+      client: "vast",
+      schedule: [
+        {
+          offset: "pre",
+          tag: `//fc2jav.xyz/a5ru6rtjhrn7upohfpzv.xml`,
+        },
+      ],
+    };
+*/
+    data.jwplayer.skin = {
+      controlbar: {
+        iconsActive: "#ff0000",
+      },
+      timeslider: {
+        progress: "#ff0000",
+      },
+      menus: {
+        background: "#121212",
+        textActive: "#ff0000",
+      },
+    };
 
     return res.json(data);
   } catch (err) {
@@ -154,6 +178,7 @@ exports.getEmbedV = async (req, res) => {
         type: `application/vnd.apple.mpegurl`,
       },
     ];
+
     const thumbnails = await File.Data.findOne({
       fileId: row?._id,
       type: "thumbnails",

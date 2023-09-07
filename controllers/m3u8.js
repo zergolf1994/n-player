@@ -128,8 +128,26 @@ exports.getMaster = async (req, res) => {
             { contentMaster }
           );
         }
+
         if (contentMaster.length > 0) {
-          ArrayMaster.push(contentMaster.join(","));
+          ArrayMaster.push(
+            contentMaster
+              .map((e) => {
+                if (e.match(/RESOLUTION=(.*?)/gm)) {
+                  if (isNaN(row?.name)) {
+                    return e;
+                  } else {
+                    const match = e.match(
+                      /RESOLUTION=([\w\-]{1,200})x([\w\-]{1,200})$/i
+                    );
+                    return `RESOLUTION=${match[1]}x${row?.name}`;
+                  }
+                } else {
+                  return e;
+                }
+              })
+              .join(",")
+          );
           ArrayMaster.push(m3u8Index);
           ArrayMaster.push("");
         }
