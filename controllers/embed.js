@@ -1,4 +1,4 @@
-const { File } = require("../models");
+const { File, Domain } = require("../models");
 const { Check } = require("../utils");
 
 exports.getEmbed = async (req, res) => {
@@ -30,58 +30,14 @@ exports.getSource = async (req, res) => {
     const { slug } = req.params;
     let host = req.get("host");
     let data = {
-      title: `test`,
       userToken: "test",
       jwplayer: {},
     };
 
-    /*const row = await File.List.aggregate([
-      { $match: { slug } },
-      //file_data
-      {
-        $lookup: {
-          from: "file_datas",
-          localField: "_id",
-          foreignField: "fileId",
-          as: "video",
-          pipeline: [
-            { $match: { type: "video" } },
-            //ตั้งค่า
-            {
-              $set: {
-                file: {
-                  $concat: ["//", host, "/", "$$ROOT._id", "/_"],
-                },
-                type: `application/vnd.apple.mpegurl`,
-              },
-            },
-            {
-              $project: {
-                _id: 0,
-                file: 1,
-                type: 1,
-              },
-            },
-          ],
-        },
-      },
-      {
-        $set: {
-          sources: "$video",
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          sources: 1,
-        },
-      },
-    ]);
-    data.jwplayer = {
-      ...row,
-    };*/
-    const row = await File.List.findOne({ slug }).select(`_id`);
+    const row = await File.List.findOne({ slug }).select(`_id title`);
     if (!row?._id) return res.json({ error: true, msg: "ไม่พบไฟล์วิดีโอ" });
+
+    data.title = row.title;
     data.jwplayer.sources = [
       {
         file: `//${host}/${row?._id}/_`,
@@ -89,7 +45,7 @@ exports.getSource = async (req, res) => {
       },
     ];
 
-    data.jwplayer.key = "W7zSm81+mmIsg7F+fyHRKhF3ggLkTqtGMhvI92kbqf/ysE99"; //ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc=
+    data.jwplayer.key = "W7zSm81+mmIsg7F+fyHRKhF3ggLkTqtGMhvI92kbqf/ysE99"; //ITWMv7t88JGzI0xPwW8I0+LveiXX9SWbfdmt0ArUSyc= //uoW6qHjBL3KNudxKVnwa3rt5LlTakbko9e6aQ6VUyKQ=
     data.jwplayer.width = "100%";
     data.jwplayer.height = "100%";
     data.jwplayer.preload = "metadata";
@@ -97,6 +53,7 @@ exports.getSource = async (req, res) => {
     data.jwplayer.hlshtml = "true";
     data.jwplayer.controls = "true";
     data.jwplayer.pipIcon = "enabled";
+    data.jwplayer.image = `//${host}/poster/${row?._id}.jpg`;
 
     const thumbnails = await File.Data.findOne({
       fileId: row?._id,
@@ -111,7 +68,7 @@ exports.getSource = async (req, res) => {
         },
       ];
     }
-/*
+    /*
     data.jwplayer.advertising = {
       client: "vast",
       schedule: [
@@ -142,10 +99,10 @@ exports.getSource = async (req, res) => {
   }
 };
 
-exports.getEmbedV = async (req, res) => {
+exports.getEmbedV1 = async (req, res) => {
   try {
-    const { slug } = req.params;
-    let host = req.get("host");
+    const { slug } = req.params,
+      host = req.get("host");
     //const secFetchSite = req?.headers["sec-fetch-site"] || "none";
 
     //if (["none", "cross-site"].includes(secFetchSite))
@@ -153,12 +110,34 @@ exports.getEmbedV = async (req, res) => {
 
     // const referer = Check.extractDomain(req?.headers?.referer);
 
+    const domain = await Domain.Player.findOne({ domain: host });
+
+    if (!domain?._id) return res.render("error", { msg: "ไม่พบโดเมนในระบบ" });
+
+    if (!domain?.active)
+      return res.render("error", { msg: "ยังไม่เปิดใช้งาน" });
+
+    const row = await File.List.findOne({ slug }).select(`_id title`);
+
+    if (!row?._id) return res.render("error", { msg: "ไม่พบไฟล์วิดีโอ" });
+    const file_data = await File.Data.countDocuments({
+      type: "video",
+      fileId: row?._id,
+      active: true,
+    });
+
+    if (!file_data)
+      return res.render("error", { msg: "วิดีโอนี้กำลังประมวลผล" });
+
+    const appearance = domain?.appearance[0] || {};
+
     let data = {
       title: `Player`,
-      base_color: `#ffffff`,
+      base_color: appearance?.BaseColor || `#ffffff`,
       slug,
-      host: req.get("host"),
+      host,
       lang: "th",
+      isContinue: appearance?.ContinuePlay || false,
       jwplayer: {
         key: "W7zSm81+mmIsg7F+fyHRKhF3ggLkTqtGMhvI92kbqf/ysE99",
         width: "100%",
@@ -168,34 +147,80 @@ exports.getEmbedV = async (req, res) => {
         hlshtml: "true",
         controls: "true",
         pipIcon: "true",
+        autostart: appearance?.AutoPlay || false,
+        mute: appearance?.Mute || false,
+        repeat: appearance?.Repeat || false,
+        image: appearance?.PosterLink
+          ? appearance?.PosterLink
+          : `//${host}/poster/${row?._id}.jpg`,
       },
     };
-    const row = await File.List.findOne({ slug }).select(`_id`);
-    if (!row?._id) return res.json({ error: true, msg: "ไม่พบไฟล์วิดีโอ" });
     data.jwplayer.sources = [
       {
         file: `//${host}/${row?._id}/_`,
         type: `application/vnd.apple.mpegurl`,
       },
     ];
-
-    const thumbnails = await File.Data.findOne({
-      fileId: row?._id,
-      type: "thumbnails",
-    }).select(`_id`);
-
-    if (thumbnails?._id) {
-      data.jwplayer.tracks = [
-        {
-          file: `//${host}/thumbnails/${thumbnails?._id}.vtt`,
-          kind: "thumbnails",
-        },
-      ];
+    //ชื่อ
+    if (appearance?.ShowTitle) {
+      data.jwplayer.title = row?.title;
     }
-    console.log(data);
+    //สี
+    if (data?.base_color) {
+      data.jwplayer.skin = {
+        controlbar: {
+          iconsActive: data?.base_color,
+        },
+        timeslider: {
+          progress: data?.base_color,
+        },
+        menus: {
+          background: "#121212",
+          textActive: data?.base_color,
+        },
+      };
+    }
+    //logo
+    if (appearance?.LogoLink && appearance?.ShowLogo) {
+      data.jwplayer.logo = {
+        file: appearance?.LogoLink,
+        link: appearance?.LogoHref,
+        hide: "true",
+        position: appearance?.LogoPosition,
+      };
+    }
+
+    //พรีวิว
+    if (appearance?.ShowPreview) {
+      const thumbnails = await File.Data.findOne({
+        fileId: row?._id,
+        type: "thumbnails",
+      }).select(`_id`);
+
+      if (thumbnails?._id) {
+        data.jwplayer.tracks = [
+          {
+            file: `//${host}/thumbnails/${thumbnails?._id}.vtt`,
+            kind: "thumbnails",
+          },
+        ];
+      }
+    }
+
+    if (domain?.advertActive) {
+      data.jwplayer.advertising = {
+        client: "vast",
+        schedule: [
+          {
+            offset: "pre",
+            tag: `//${host}/advert/${domain?._id}.xml`,
+          },
+        ],
+      };
+    }
     return res.render("jwplayer", data);
   } catch (err) {
     console.log(err);
-    return res.json({ error: true });
+    return res.render("error", { msg: "เกิดข้อมิดพลาดจากระบบ" });
   }
 };

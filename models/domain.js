@@ -20,5 +20,23 @@ const Group = mongoose.model(
     }
   )
 );
-
-module.exports = Domain = { Group };
+const Player = mongoose.model(
+  "domain_player",
+  new Schema(
+    {
+      _id: { type: String, default: () => uuid.v4() },
+      domain: { type: String, required: true },
+      active: { type: Boolean, default: false },
+      advertActive: { type: Boolean, default: false },
+      setDefault: { type: Boolean, default: false },
+      advert: { type: Mixed, default: [] },
+      appearance: { type: Mixed, default: [] },
+      accessToken: { type: String, required: true },
+      userId: { type: String, required: true },
+    },
+    {
+      timestamps: true,
+    }
+  )
+);
+module.exports = Domain = { Group, Player };

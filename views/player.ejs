@@ -8,10 +8,10 @@
     <title><%= title %></title>
     <link
       rel="preload"
-      href="https://ssl.p.jwpcdn.com/player/v/8.18.2/jwplayer.js"
+      href="//ssl.p.jwpcdn.com/player/v/8.25.8/jwplayer.js"
       as="script"
     />
-    <script src="https://ssl.p.jwpcdn.com/player/v/8.18.2/jwplayer.js"></script>
+    <script src="//ssl.p.jwpcdn.com/player/v/8.25.8/jwplayer.js"></script>
     <link
       rel="stylesheet"
       type="text/css"
@@ -36,6 +36,14 @@
       }
       .jw-rightclick {
         display: none !important;
+      }
+      .jw-svg-icon-play path {
+        display: none;
+      }
+      .jw-svg-icon-play {
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg width='512' height='512' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3e%3cpath fill='none' stroke='%23ef4444' stroke-linecap='round' stroke-width='1.5' d='M3 12v6.967c0 2.31 2.534 3.769 4.597 2.648l3.203-1.742M3 8V5.033c0-2.31 2.534-3.769 4.597-2.648l12.812 6.968a2.998 2.998 0 0 1 0 5.294l-6.406 3.484'/%3e%3c/svg%3e");
+        background-size: contain;
+        background-repeat: no-repeat;
       }
     </style>
   </head>

@@ -41,11 +41,21 @@
       .jw-rightclick {
         display: none !important;
       }
+      .jw-logo{
+        max-height: 50px;
+      }
     </style>
+    
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//<%= host %>/assets/style.css"
+    />
   </head>
   <body>
     <div id="player"></div>
     <script>
+      const slug = "<%= slug%>"
       const player = jwplayer("player")
       player.setup(<%- JSON.stringify(jwplayer) %>)
       let levelQ,clientSide = {
@@ -137,6 +147,64 @@
         clientSide.qualitySwitch(e.level.index)
       })
 
+      <% if(isContinue) {%>
+        player.once("ready", (e) => {
+      let resumeAt = localStorage.getItem(`time_${slug}`) || 0;
+      if (!resumeAt) return null;
+      const modalHTML = `
+      <div class="popup">
+        <div class="body">
+          <span class="h1"> เล่นต่อจากเดิม </span>
+          <span class="h2"> คุณต้องการเล่นต่อจากเดิมไหม ? </span>
+          <span class="h2"> ${resumeAt} </span>
+
+        </div>
+        <div class="footer">
+          <button class="continue_submit">เล่นต่อจากเดิม</button>
+          <button class="continue_cancel">ไม่, ขอบคุณ</button>
+        </div>
+      </div>
+    `;
+      document
+        .querySelector("body")
+        .insertAdjacentHTML("afterbegin", modalHTML);
+
+      // เพิ่มการฟังเหตุการณ์คลิก
+      document
+        .querySelector(".continue_submit")
+        .addEventListener("click", function () {
+          // การดำเนินการเมื่อคลิกที่ปุ่ม "Continue"
+          player.seek(resumeAt).play();
+          document.querySelector(".popup").remove();
+        });
+
+      document
+        .querySelector(".continue_cancel")
+        .addEventListener("click", function () {
+          // การดำเนินการเมื่อคลิกที่ปุ่ม "Cancel"
+          player.play();
+          document.querySelector(".popup").remove();
+        });
+    });
+    player.once("play", (e) => {
+      const popupElement = document.querySelector(".popup");
+      if (popupElement) {
+        popupElement.remove();
+      }
+    });
+    player.once("displayClick", (e) => {
+      const popupElement = document.querySelector(".popup");
+      if (popupElement) {
+        popupElement.remove();
+      }
+    });
+    //บันทึกเวลา
+    player.on("time", function (e) {
+      if (!slug) return null;
+      localStorage?.setItem(`time_${slug}`, e.position);
+    });
+    
+      <% } %>
 /*
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}

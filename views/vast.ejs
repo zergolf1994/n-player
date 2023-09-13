@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<VAST
+  version="3.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="vast3_draft.xsd"
+>
+  <% rows.forEach(function(row){ %>
+    <Ad id="<%= row.advertId %>" sequence="0">
+      <InLine>
+        <AdSystem version="2.0">JW Player</AdSystem>
+        <AdTitle>Static Tag</AdTitle>
+        <Creatives>
+          <Creative sequence="0">
+            <Linear skipoffset="<%= row.skip %>">
+              <VideoClicks>
+                <ClickThrough><%= row.href %></ClickThrough>
+              </VideoClicks>
+              <MediaFiles>
+                <MediaFile
+                  id="<%= row.item_key %>"
+                  delivery="progressive"
+                  type="video/mp4"
+                  bitrate="400"
+                  width="640"
+                  height="360"
+                  ><%= row.link.replace("http://", "//").replace("https://",
+                  "//") %></MediaFile
+                >
+              </MediaFiles>
+            </Linear>
+          </Creative>
+          <Creative> </Creative>
+        </Creatives>
+      </InLine>
+    </Ad>
+  <% }); %>
+</VAST>
