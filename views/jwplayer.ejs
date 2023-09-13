@@ -156,7 +156,7 @@
         <div class="body">
           <span class="h1"> เล่นต่อจากเดิม </span>
           <span class="h2"> คุณต้องการเล่นต่อจากเดิมไหม ? </span>
-          <span class="h2"> ${resumeAt} </span>
+          <span class="h2"> ${SecondsConvert(resumeAt)} </span>
 
         </div>
         <div class="footer">
@@ -212,6 +212,19 @@
       gtag('config', 'G-MNDTG994HH');
       gtag('event', 'players', {'method': '<%- host %>'});
       */
+    function  SecondsConvert(sec) {
+    let totalSeconds = Math.floor(sec);
+    let hours = Math.floor(totalSeconds / 3600);
+    totalSeconds %= 3600;
+    let minutes = Math.floor(totalSeconds / 60);
+    let seconds = totalSeconds % 60;
+
+    minutes = String(minutes).padStart(2, "0");
+    hours = String(hours).padStart(2, "0");
+    seconds = String(seconds).padStart(2, "0");
+
+    return hours + ":" + minutes + ":" + seconds;
+  }
     </script>
   </body>
 </html>

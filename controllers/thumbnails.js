@@ -188,7 +188,6 @@ exports.getImage = async (req, res) => {
     ]);
     const row = rows?.at(0);
     if (!row?._id) return res.status(404).end();
-
     request({ url: row?.imgUrl }, (err, resp, body) => {})
       .on("response", function (res) {
         res.headers["content-type"] = `image/webp`;

@@ -107,6 +107,7 @@ exports.getMaster = async (req, res) => {
         },
       },
     ]);
+    
     if (!rows?.length) return res.status(404).end();
     let removeDefault = rows?.map((e) => e?.name).includes("360");
     let ArrayMaster = ["#EXTM3U"];
