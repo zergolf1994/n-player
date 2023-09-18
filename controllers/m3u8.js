@@ -393,7 +393,7 @@ exports.getIndex = async (req, res) => {
         const countUsed = await File.HlsCache.countDocuments({
           domainId: getDoamin?._id,
         });
-        console.log(countUsed)
+        
         await Domain.Group.findByIdAndUpdate(
           { _id: getDoamin?._id },
           { used: countUsed }
