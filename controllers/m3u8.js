@@ -388,12 +388,12 @@ exports.getIndex = async (req, res) => {
         { filedataId: row?._id },
         { domainId: getDoamin?._id }
       );
-      
-      if (updateDomainId?._id) {
+      if (updateDomainId?.matchedCount) {
         // อัพเดตจำนวนที่ใช้งาน
         const countUsed = await File.HlsCache.countDocuments({
           domainId: getDoamin?._id,
         });
+        console.log(countUsed)
         await Domain.Group.findByIdAndUpdate(
           { _id: getDoamin?._id },
           { used: countUsed }
