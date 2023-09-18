@@ -13,7 +13,7 @@ const List = mongoose.model(
       title: { type: String },
       source: { type: String },
       slug: { type: String, required: true },
-      mimeType: { type: String, required: true },
+      mimeType: { type: String },
       dimention: { type: String },
       views: { type: Mixed },
       size: { type: Mixed },
@@ -40,15 +40,16 @@ const Data = mongoose.model(
       serverId: { type: String },
       userId: { type: String, required: true },
       fileId: { type: String, required: true },
-      domainId: { type: String },
-      contentMaster: { type: Mixed },
-      contentIndex: { type: Mixed },
+      //domainId: { type: String },
+      //contentMaster: { type: Mixed },
+      //contentIndex: { type: Mixed },
     },
     {
       timestamps: true,
     }
   )
 );
+
 const Process = mongoose.model(
   "file_process",
   new Schema(
@@ -67,5 +68,19 @@ const Process = mongoose.model(
     }
   )
 );
-
-module.exports = File = { List, Data, Process };
+const HlsCache = mongoose.model(
+  "file_hls_cache",
+  new Schema(
+    {
+      _id: { type: String, default: () => uuid.v4() },
+      filedataId: { type: String, required: true },
+      domainId: { type: String },
+      contentMaster: { type: Mixed },
+      contentIndex: { type: Mixed },
+    },
+    {
+      timestamps: true,
+    }
+  )
+);
+module.exports = File = { List, Data, Process, HlsCache };

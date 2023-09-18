@@ -63,6 +63,28 @@ exports.getMaster = async (req, res) => {
           file: { $arrayElemAt: ["$files", 0] },
         },
       },
+      //hlsCache
+      {
+        $lookup: {
+          from: "file_hls_caches",
+          localField: "_id",
+          foreignField: "filedataId",
+          as: "hls_caches",
+          pipeline: [
+            {
+              $project: {
+                _id: 0,
+                contentMaster: 1,
+              },
+            },
+          ],
+        },
+      },
+      {
+        $addFields: {
+          hlsCache: { $arrayElemAt: ["$hls_caches", 0] },
+        },
+      },
       {
         $set: {
           svIp: "$server.svIp",
@@ -92,6 +114,7 @@ exports.getMaster = async (req, res) => {
           m3u8Index: {
             $concat: ["//", host, "/", "$$ROOT._id", "/0"],
           },
+          contentMaster: "$hlsCache.contentMaster",
         },
       },
       {
@@ -107,8 +130,9 @@ exports.getMaster = async (req, res) => {
         },
       },
     ]);
-    
+
     if (!rows?.length) return res.status(404).end();
+
     let removeDefault = rows?.map((e) => e?.name).includes("360");
     let ArrayMaster = ["#EXTM3U"];
     for (const key in rows) {
@@ -123,11 +147,26 @@ exports.getMaster = async (req, res) => {
           if (!data?.length) return res.status(404).end();
           contentMaster = await GetM3U8.extractMaster(data);
           if (!contentMaster?.length) return res.status(404).end();
+          // ค้นหาว่ามีฐานข้อมูลหรือยัง
+          const exist = await File.HlsCache.findOne({
+            filedataId: row?._id,
+          }).select(`_id`);
 
-          await File.Data.findByIdAndUpdate(
+          if (exist?._id) {
+            //อัพเดต
+            await File.HlsCache.findByIdAndUpdate(
+              { _id: exist?._id },
+              { contentMaster }
+            );
+          } else {
+            //สร้างใหม่
+            await File.HlsCache.create({ filedataId: row?._id, contentMaster });
+          }
+
+          /*await File.Data.findByIdAndUpdate(
             { _id: row?._id },
             { contentMaster }
-          );
+          );*/
         }
 
         if (contentMaster.length > 0) {
@@ -215,18 +254,42 @@ exports.getIndex = async (req, res) => {
           file: { $arrayElemAt: ["$files", 0] },
         },
       },
-      //domain-stream
+      //hlsCache
       {
         $lookup: {
-          from: "domain_streams",
-          localField: "domainId",
-          foreignField: "_id",
-          as: "domain_streams",
+          from: "file_hls_caches",
+          localField: "_id",
+          foreignField: "filedataId",
+          as: "hls_caches",
           pipeline: [
+            //domain-stream
+            {
+              $lookup: {
+                from: "domain_streams",
+                localField: "domainId",
+                foreignField: "_id",
+                as: "domain_streams",
+                pipeline: [
+                  {
+                    $project: {
+                      _id: 0,
+                      lists: 1,
+                    },
+                  },
+                ],
+              },
+            },
+            {
+              $addFields: {
+                domain_stream: { $arrayElemAt: ["$domain_streams", 0] },
+              },
+            },
             {
               $project: {
                 _id: 0,
-                lists: 1,
+                contentIndex: 1,
+                domainId: 1,
+                domain_stream: 1,
               },
             },
           ],
@@ -234,7 +297,7 @@ exports.getIndex = async (req, res) => {
       },
       {
         $addFields: {
-          domain_stream: { $arrayElemAt: ["$domain_streams", 0] },
+          hlsCache: { $arrayElemAt: ["$hls_caches", 0] },
         },
       },
       {
@@ -242,7 +305,7 @@ exports.getIndex = async (req, res) => {
           svIp: "$server.svIp",
           slug: "$file.slug",
           domain: {
-            $ifNull: ["$domain_stream.lists", []],
+            $ifNull: ["$hlsCache.domain_stream.lists", []],
           },
           m3u8Index: {
             $concat: [
@@ -255,6 +318,7 @@ exports.getIndex = async (req, res) => {
               ".mp4/index.m3u8",
             ],
           },
+          contentIndex: "$hlsCache.contentIndex",
         },
       },
       {
@@ -281,7 +345,21 @@ exports.getIndex = async (req, res) => {
       contentIndex = await GetM3U8.extractIndex(data);
       if (!contentIndex?.length) return res.status(404).end();
 
-      await File.Data.findByIdAndUpdate({ _id: row?._id }, { contentIndex });
+      // ค้นหาว่ามีฐานข้อมูลหรือยัง
+      const exist = await File.HlsCache.findOne({
+        filedataId: row?._id,
+      }).select(`_id`);
+      if (exist?._id) {
+        //อัพเดต
+        await File.HlsCache.findByIdAndUpdate(
+          { _id: exist?._id },
+          { contentIndex }
+        );
+      } else {
+        //สร้างใหม่
+        await File.HlsCache.create({ filedataId: row?._id, contentIndex });
+      }
+      //await File.Data.findByIdAndUpdate({ _id: row?._id }, { contentIndex });
     }
 
     if (!contentIndex.length) return res.status(404).end();
@@ -290,6 +368,7 @@ exports.getIndex = async (req, res) => {
 
     if (!domain?.length) {
       //ค้นหา โดเมนสตรีม
+
       const getDoamin = await Domain.Group.findOne(
         {
           active: true,
@@ -305,13 +384,14 @@ exports.getIndex = async (req, res) => {
 
       if (!domain?.length) return res.status(404).end("ไม่พบรายการโดเมนสตรีม");
 
-      const updateDomainId = await File.Data.findByIdAndUpdate(
-        { _id: row?._id },
+      const updateDomainId = await File.HlsCache.updateOne(
+        { filedataId: row?._id },
         { domainId: getDoamin?._id }
       );
+      
       if (updateDomainId?._id) {
         // อัพเดตจำนวนที่ใช้งาน
-        const countUsed = await File.Data.countDocuments({
+        const countUsed = await File.HlsCache.countDocuments({
           domainId: getDoamin?._id,
         });
         await Domain.Group.findByIdAndUpdate(

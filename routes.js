@@ -23,6 +23,10 @@ router.route("/advert/:playerId.(xml)").get(getVast);
 const { serverCreate } = require("./controllers/server");
 router.get("/server/create", serverCreate);
 
+const { FileRemote } = require("./controllers/file");
+router.route("/api/request").post(FileRemote);
+
+
 router.all("*", async (req, res) => {
   return res.status(404).json({ error: true, msg: `link_not_found` });
 });

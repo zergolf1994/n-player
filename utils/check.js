@@ -54,7 +54,7 @@ exports.Allow = (link) => {
       const match = link.match(matchMP4);
       setData.title = match[1];
       setData.type = "direct";
-      setData.source = source;
+      setData.source = link;
     } else {
       setData.status = false;
     }

@@ -12,3 +12,23 @@ exports.get = async (data) => {
     return;
   }
 };
+
+exports.getStatus = async (data) => {
+  try {
+    return new Promise(function (resolve, reject) {
+      fetch(data, { method: "HEAD" })
+        .then((response) => {
+          const resp = {
+            statusCode: response.status,
+            contentType: response.headers.get("content-type"),
+          };
+          resolve(resp);
+        })
+        .catch((error) => {
+          resolve({});
+        });
+    });
+  } catch (error) {
+    return {};
+  }
+};
