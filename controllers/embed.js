@@ -221,7 +221,7 @@ exports.getEmbedV1 = async (req, res) => {
     }
 
     data.googleAnalytics = sets?.string_google_analytics || "";
-    console.log(data.googleAnalytics)
+    
     return res.render("jwplayer", data);
   } catch (err) {
     console.log(err);
