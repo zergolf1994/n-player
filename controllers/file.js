@@ -14,7 +14,7 @@ exports.FileRemote = async (req, res) => {
       return res.json({ status: false, msg: "โดเมนไม่ถูกต้อง" });
 
     const Allow = Check.Allow(source);
-    
+
     if (!Allow?.status)
       return res.json({ status: false, msg: "ไม่รองรับแหล่งที่มา" });
 
@@ -22,6 +22,7 @@ exports.FileRemote = async (req, res) => {
     let where = {
       source: Allow?.source,
       type: Allow?.type,
+      userId: play?.userId,
     };
     const exist = await File.List.findOne(where);
     if (exist?._id) {
@@ -82,9 +83,9 @@ exports.FileRemote = async (req, res) => {
 
       dataCreate.slug = await Generate.Slug();
       dataCreate.userId = play?.userId;
-      
+
       let dbCreate = await File.List.create(dataCreate);
-      
+
       if (dbCreate?._id) {
         return res.json({
           status: "success",
