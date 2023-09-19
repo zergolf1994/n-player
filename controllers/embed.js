@@ -133,7 +133,7 @@ exports.getEmbedV1 = async (req, res) => {
     const appearance = domain?.appearance[0] || {};
 
     let data = {
-      title: `Player`,
+      title: row?.title,
       base_color: appearance?.BaseColor || `#ffffff`,
       slug,
       host,
