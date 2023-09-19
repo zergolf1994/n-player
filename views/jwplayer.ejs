@@ -205,13 +205,16 @@
     });
     
       <% } %>
-/*
+      
+      <% if(googleAnalytics != "") {%>
+
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-MNDTG994HH');
+      gtag('config', "<%=googleAnalytics%>");
       gtag('event', 'players', {'method': '<%- host %>'});
-      */
+      
+      <% } %>
     function  SecondsConvert(sec) {
     let totalSeconds = Math.floor(sec);
     let hours = Math.floor(totalSeconds / 3600);

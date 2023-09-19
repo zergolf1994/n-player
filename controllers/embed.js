@@ -1,5 +1,5 @@
 const { File, Domain } = require("../models");
-const { Check } = require("../utils");
+const { Check, getSet } = require("../utils");
 
 exports.getEmbed = async (req, res) => {
   try {
@@ -110,6 +110,7 @@ exports.getEmbedV1 = async (req, res) => {
 
     // const referer = Check.extractDomain(req?.headers?.referer);
 
+    const sets = await getSet({ attr: ["string_google_analytics"] });
     const domain = await Domain.Player.findOne({ domain: host });
 
     if (!domain?._id) return res.render("error", { msg: "ไม่พบโดเมนในระบบ" });
@@ -218,6 +219,9 @@ exports.getEmbedV1 = async (req, res) => {
         ],
       };
     }
+
+    data.googleAnalytics = sets?.string_google_analytics || "";
+    console.log(data.googleAnalytics)
     return res.render("jwplayer", data);
   } catch (err) {
     console.log(err);
