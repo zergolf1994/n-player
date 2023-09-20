@@ -37,14 +37,14 @@ exports.FileRemote = async (req, res) => {
       let dataCreate = {};
 
       if (Allow?.type == "gdrive") {
-        const GData = await Google.DriveSource({ source: Allow?.source });
+        const GData = await Google.DriveSource(where);
         if (GData?.status == "ok") {
           dataCreate.title = title || GData?.title;
           dataCreate.source = Allow?.source;
           dataCreate.type = Allow?.type;
           dataCreate.mimeType = "video";
         } else {
-          const GInfo = await Google.DriveInfo({ source: Allow?.source });
+          const GInfo = await Google.DriveInfo(where);
           if (GInfo?.title) {
             dataCreate.title = title || GInfo?.title;
             dataCreate.source = Allow?.source;
