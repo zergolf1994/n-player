@@ -42,7 +42,6 @@ exports.FileRemote = async (req, res) => {
           dataCreate.title = title || GData?.title;
           dataCreate.source = Allow?.source;
           dataCreate.type = Allow?.type;
-          dataCreate.mimeType = "video";
         } else {
           const GInfo = await Google.DriveInfo(where);
           if (GInfo?.title) {
@@ -75,7 +74,6 @@ exports.FileRemote = async (req, res) => {
         dataCreate.title = title || Allow?.title;
         dataCreate.source = Allow?.source;
         dataCreate.type = Allow?.type;
-        dataCreate.mimeType = "video";
       }
 
       if (!Object?.keys(dataCreate)?.length)
@@ -83,6 +81,7 @@ exports.FileRemote = async (req, res) => {
 
       dataCreate.slug = await Generate.Slug();
       dataCreate.userId = play?.userId;
+      dataCreate.mimeType = "video";
 
       let dbCreate = await File.List.create(dataCreate);
 
