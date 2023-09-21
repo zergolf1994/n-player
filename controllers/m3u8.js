@@ -413,11 +413,8 @@ exports.getIndex = async (req, res) => {
         if (isNaN(item)) {
           array.push(item);
         } else {
-          //https://images-onepick-opensocial.googleusercontent.com/gadgets/proxy?container=focus&refresh=31536000&url=https%3A%2F%2Fcc0423-5.click%2Ftxt%2Fhls1%2F7f4b48049b6badecb1d1ce931cf556cf_360%2F7f4b48049b6badecb1d1ce931cf556cf-4.aaa%3FmsKey%3Dm20
-          const linkTs = encodeURIComponent(
-            `https://${domain[i]}/${row?._id}/${item}.html`
-          );
-          array.push(google_domain + linkTs);
+          
+          array.push(`https://${domain[i]}/${row?._id}/${item}.html`);
 
           if (i == e) {
             i = 0;
