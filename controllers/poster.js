@@ -1,5 +1,6 @@
 const { File } = require("../models");
 const request = require("request");
+const { Cacher } = require("../utils");
 
 exports.getPoster = async (req, res) => {
   try {
@@ -98,13 +99,22 @@ exports.getPoster = async (req, res) => {
     if (!row?.duration) url += "/thumb-1000-w600.jpg";
     else url += `/thumb-${Math.floor(row?.duration / 2) * 1000}-w600.jpg`;
 
+    let buffers = [];
+    let length = 0;
     request({ url }, (err, resp, body) => {})
       .on("response", function (res) {
         res.headers["content-type"] = `image/jpg`;
         res.headers["Cache-control"] = "public, max-age=3600";
       })
       .on("data", function (chunk) {
-        //console.log(chunk)
+        length += chunk.length;
+        buffers.push(chunk);
+      })
+      .on("end", async function () {
+        if (res?.statusCode == 200) {
+          let data = Buffer.concat(buffers);
+          await Cacher.savePoster(`${fileId}.jpg`, data);
+        }
       })
       .pipe(res);
   } catch (err) {

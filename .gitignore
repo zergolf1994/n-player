@@ -131,3 +131,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+
+public/poster/
+public/thumbnails/
+.cacher/

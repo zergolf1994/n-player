@@ -1,5 +1,5 @@
 const { File } = require("../models");
-const { GetM3U8 } = require("../utils");
+const { GetM3U8, Cacher } = require("../utils");
 const request = require("request");
 
 const os = require("os");
@@ -95,7 +95,10 @@ exports.getVtt = async (req, res) => {
         const match = item.match(regex);
         if (match) {
           const extension = `.${match[1]}`;
-          const newText = item.replace(extension, `/${row?._id}` + extension).replace(/\s+/g, '').replace(/thumbnails\//g, '');
+          const newText = item
+            .replace(extension, `/${row?._id}` + extension)
+            .replace(/\s+/g, "")
+            .replace(/thumbnails\//g, "");
           array.push(`${newText}`);
         } else {
           array.push(item);
@@ -103,6 +106,7 @@ exports.getVtt = async (req, res) => {
       }
     }
     res.set("content-type", "text/vtt");
+    await Cacher.saveVtt(`${dataId}.vtt`, array.join(os.EOL));
     return res.end(array.join(os.EOL));
   } catch (err) {
     console.log(err);
@@ -188,13 +192,23 @@ exports.getImage = async (req, res) => {
     ]);
     const row = rows?.at(0);
     if (!row?._id) return res.status(404).end();
+
+    let buffers = [];
+    let length = 0;
     request({ url: row?.imgUrl }, (err, resp, body) => {})
       .on("response", function (res) {
         res.headers["content-type"] = `image/webp`;
         res.headers["Cache-control"] = "public, max-age=31536000";
       })
       .on("data", function (chunk) {
-        //console.log(chunk)
+        length += chunk.length;
+        buffers.push(chunk);
+      })
+      .on("end", async function () {
+        if (res?.statusCode == 200) {
+          let data = Buffer.concat(buffers);
+          await Cacher.saveThumbnails(`${dataId}.webp`, data);
+        }
       })
       .pipe(res);
   } catch (err) {

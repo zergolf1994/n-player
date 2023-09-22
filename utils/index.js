@@ -8,6 +8,7 @@ const getSet = require("./get.set.obj");
 const Google = require("./google");
 const useCurl = require("./useCurl");
 const GetM3U8 = require("./m3u8");
+const Cacher = require("./cache");
 
 module.exports = {
   Check,
@@ -18,4 +19,5 @@ module.exports = {
   Google,
   useCurl,
   GetM3U8,
+  Cacher
 };
