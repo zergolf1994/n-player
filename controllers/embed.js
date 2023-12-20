@@ -26,8 +26,8 @@ exports.getEmbed = async (req, res) => {
 };
 
 exports.getSource = async (req, res) => {
+  const { slug } = req.params;
   try {
-    const { slug } = req.params;
     let host = req.get("host");
     let data = {
       userToken: "test",
@@ -221,10 +221,10 @@ exports.getEmbedV1 = async (req, res) => {
     }
 
     data.googleAnalytics = sets?.string_google_analytics || "";
-    
+    console.log("success", slug);
     return res.render("jwplayer", data);
   } catch (err) {
-    console.log(err);
+    console.log("success", error);
     return res.render("error", { msg: "เกิดข้อมิดพลาดจากระบบ" });
   }
 };

@@ -21,7 +21,7 @@ app.use(
   })
 );
 app.use(express.static(path.join(global.dir, "public")));
-app.use(bodyParser.json({ limit: "10mb" }));
+app.use(bodyParser.json());
 app.options("*", (req, res, next) => res.end());
 
 app.use(require("./routes"));

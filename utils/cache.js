@@ -3,7 +3,7 @@ const fs = require("fs-extra");
 const dayjs = require("dayjs");
 const dirCache = ".cacher";
 
-exports.getData = async (cacheItem) => {
+exports.getData = async (cacheItem, timeCache = 60) => {
   try {
     let cacheDir = path.join(global.dir, dirCache),
       cacheFile = path.join(cacheDir, `${cacheItem}`);
@@ -13,9 +13,9 @@ exports.getData = async (cacheItem) => {
     }
     if (fs.existsSync(cacheFile)) {
       let { birthtime } = fs.statSync(cacheFile);
-      const second = dayjs().diff(dayjs(birthtime), "second")
-      
-      if (second > 60) {
+      const second = dayjs().diff(dayjs(birthtime), "second");
+
+      if (second > timeCache) {
         await fs.unlinkSync(cacheFile);
         return { error: true };
       }
