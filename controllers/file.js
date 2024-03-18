@@ -10,8 +10,8 @@ exports.FileRemote = async (req, res) => {
     let play = await Domain.Player.findOne({ accessToken: token });
     if (!play) return res.json({ status: false, msg: "ไม่พบข้อมูล" });
     if (!play?.active) return res.json({ status: false, msg: "ปิดใช้งาน" });
-    if (play?.domain != req.get("host"))
-      return res.json({ status: false, msg: "โดเมนไม่ถูกต้อง" });
+    //if (play?.domain != req.get("host"))
+    //  return res.json({ status: false, msg: "โดเมนไม่ถูกต้อง" });
 
     const Allow = Check.Allow(source);
 
@@ -38,12 +38,14 @@ exports.FileRemote = async (req, res) => {
 
       if (Allow?.type == "gdrive") {
         const GData = await Google.DriveSource(where);
+        
         if (GData?.status == "ok") {
           dataCreate.title = title || GData?.title;
           dataCreate.source = Allow?.source;
           dataCreate.type = Allow?.type;
         } else {
           const GInfo = await Google.DriveInfo(where);
+          
           if (GInfo?.title) {
             dataCreate.title = title || GInfo?.title;
             dataCreate.source = Allow?.source;
@@ -58,7 +60,7 @@ exports.FileRemote = async (req, res) => {
               }
             }
           } else {
-            return res.json({ error: true, msg: GData?.reason });
+            return res.json({ error: true, msg: GData?.reason, gdata: "" });
           }
         }
       } else if (Allow?.type == "direct") {

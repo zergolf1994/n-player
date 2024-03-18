@@ -37,7 +37,7 @@ exports.saveData = (cacheItem, data) => {
     if (!fs.existsSync(cacheDir)) {
       fs.mkdirSync(cacheDir, { recursive: true });
     }
-    console.log(`new-cache`, cacheItem);
+    //console.log(`new-cache`, cacheItem);
     fs.writeFileSync(cacheFile, data, "utf8");
   } catch (error) {
     return { error: true };

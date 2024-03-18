@@ -20,6 +20,7 @@ exports.DriveSource = async ({ source, userId }) => {
     if (token) {
       headers.Authorization = `${token?.token_type} ${token?.access_token}`;
     }
+
     if (sets?.string_webproxy) {
       proxy = sets?.string_webproxy;
     }
@@ -124,6 +125,7 @@ exports.AuthOneRand = async ({ userId }) => {
         row = dbUpdate;
       }
     }
+
     return row?.token || {}; // เนื่องจากเราสุ่มเลือก 1 เรคคอร์ดเท่านั้น
   } catch (error) {
     console.log(error);
