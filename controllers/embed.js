@@ -29,6 +29,9 @@ exports.getSource = async (req, res) => {
   const { slug } = req.params;
   try {
     let host = req.get("host");
+
+    //if (host == "localhost") host = "ggcdn.xyz";
+
     let data = {
       userToken: "test",
       jwplayer: {},
