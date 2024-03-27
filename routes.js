@@ -8,10 +8,11 @@ const { getEmbed, getSource, getEmbedV1 } = require("./controllers/embed");
 const { getIndex, getMaster } = require("./controllers/m3u8");
 
 //router.route("/embed/:slug").get(getEmbed);
+router.route("/dev/:slug").get(getEmbedV1);
 router.route("/embed/:slug").get(isIframe, getEmbedV1);
 router.route("/source/:slug").get(getSource);
 router.route("/:fileId/_").get(isReferrer, getMaster);
-router.route("/:videoId/0").get(isReferrer,getIndex);
+router.route("/:videoId/0").get(isReferrer, getIndex);
 
 const { getVtt, getImage } = require("./controllers/thumbnails");
 router.route("/thumbnails/:dataId.vtt").get(getVtt);

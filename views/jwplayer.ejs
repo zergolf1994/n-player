@@ -55,6 +55,8 @@
   <body>
     <div id="player"></div>
     <script>
+
+      const isTv = !navigator.userAgent.search(/(lg|LG|sony|samsung|SONY|TV|SmartTV|SMART-TV|Tizen(.*TV))/i) > 0
             const slug = "<%= slug%>"
             const player = jwplayer("player")
             player.setup(<%- JSON.stringify(jwplayer) %>)
@@ -228,17 +230,19 @@
 
           return hours + ":" + minutes + ":" + seconds;
         }
-
+        
         (function () {
           (function a() {
               try {
                   (function b(i) {
+                    if(!isTv){
                       if (('' + (i / i)).length !== 1 || i % 20 === 0) {
-                          (function () { }).constructor('debugger')()
+                        (function () { }).constructor('debugger')()
                       } else {
-                          debugger
+                        debugger
                       }
                       b(++i)
+                    }
                   }
                   )(0)
               } catch (e) {
