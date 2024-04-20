@@ -10,8 +10,8 @@ const { getIndex, getMaster } = require("./controllers/m3u8");
 //router.route("/embed/:slug").get(getEmbed);
 router.route("/embed/:slug").get(getEmbedV1);
 router.route("/source/:slug").get(getSource);
-router.route("/:fileId/_").get(isReferrer, getMaster);
-router.route("/:videoId/0").get(isReferrer, getIndex);
+router.route("/:fileId/_").get(getMaster);
+router.route("/:videoId/0").get(getIndex);
 
 const { getVtt, getImage } = require("./controllers/thumbnails");
 router.route("/thumbnails/:dataId.vtt").get(getVtt);
@@ -29,7 +29,7 @@ const { FileRemote } = require("./controllers/file");
 router.route("/api/request").post(FileRemote);
 
 router.all("*", async (req, res) => {
-  return res.status(500).end();
+  return res.status(200).end();
 });
 
 module.exports = router;
