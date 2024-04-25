@@ -422,7 +422,7 @@ exports.getIndex = async (req, res) => {
           if (isNaN(item)) {
             array.push(item);
           } else {
-            array.push(`https://${domain[i]}/${row?._id}/${item}.html`);
+            array.push(`https://${domain[i]}/${row?._id}/${item}.aaa`);
 
             if (i == e) {
               i = 0;
