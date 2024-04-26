@@ -424,6 +424,8 @@ exports.getIndex = async (req, res) => {
           } else {
             array.push(`https://${domain[i]}/${row?._id}/${item}.aaa`);
 
+            //array.push(`https://${domain[i]}/${row?._id}/${item}.html`);
+
             if (i == e) {
               i = 0;
             } else {
