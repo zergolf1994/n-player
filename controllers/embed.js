@@ -163,7 +163,7 @@ exports.getEmbedV1 = async (req, res) => {
     };
     data.jwplayer.sources = [
       {
-        file: `//${sets?.string_domain_player || host}/${row?._id}/_`,
+        file: `//${host}/${row?._id}/_`,
         type: `application/vnd.apple.mpegurl`,
       },
     ];
