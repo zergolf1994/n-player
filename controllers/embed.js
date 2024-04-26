@@ -113,7 +113,9 @@ exports.getEmbedV1 = async (req, res) => {
 
     // const referer = Check.extractDomain(req?.headers?.referer);
 
-    const sets = await getSet({ attr: ["string_google_analytics"] });
+    const sets = await getSet({
+      attr: ["string_google_analytics", "string_domain_player"],
+    });
     const domain = await Domain.Player.findOne({ domain: host });
 
     if (!domain?._id) return res.render("error", { msg: "ไม่พบโดเมนในระบบ" });
@@ -161,7 +163,7 @@ exports.getEmbedV1 = async (req, res) => {
     };
     data.jwplayer.sources = [
       {
-        file: `//${host}/${row?._id}/_`,
+        file: `//${sets?.string_domain_player || host}/${row?._id}/_`,
         type: `application/vnd.apple.mpegurl`,
       },
     ];
@@ -227,7 +229,7 @@ exports.getEmbedV1 = async (req, res) => {
     console.log("success", slug);
     return res.render("jwplayer", data);
   } catch (err) {
-    console.log("success", error);
+    console.log("success", err);
     return res.render("error", { msg: "เกิดข้อมิดพลาดจากระบบ" });
   }
 };
