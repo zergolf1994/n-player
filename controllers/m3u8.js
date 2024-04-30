@@ -215,7 +215,7 @@ exports.getMaster = async (req, res) => {
 exports.getIndex = async (req, res) => {
   try {
     const { videoId } = req.params;
-    const data = await Cacher.getData(`${videoId}-index.m3u8`, 120);
+    const data = await Cacher.getData(`${videoId}-index.m3u8`, 300);
     if (data?.error) {
       const rows = await File.Data.aggregate([
         { $match: { _id: videoId, active: true } },
