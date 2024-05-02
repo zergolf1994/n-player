@@ -227,7 +227,7 @@ exports.getEmbedV1 = async (req, res) => {
 
     data.googleAnalytics = sets?.string_google_analytics || "";
     //return res.render("p2p_v1", data);
-    return res.render("jwplayer", data);
+    return res.render("jwplayer_p2p", data);
   } catch (err) {
     console.log("success", err);
     return res.render("error", { msg: "เกิดข้อมิดพลาดจากระบบ" });
