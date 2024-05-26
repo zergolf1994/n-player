@@ -435,11 +435,13 @@ exports.getIndex = async (req, res) => {
         }
       }
 
-      res.set("content-type", "application/x-mpegURL");
+      //res.set("content-type", "application/x-mpegURL");
+      res.set("content-type", "text/html; charset=utf-8");
       await Cacher.saveData(`${videoId}-index.m3u8`, array.join(os.EOL));
       return res.end(array.join(os.EOL));
     } else {
-      res.set("content-type", "application/x-mpegURL");
+      //res.set("content-type", "application/x-mpegURL");
+      res.set("content-type", "text/html; charset=utf-8");
       return res.end(data?.data);
     }
   } catch (err) {
